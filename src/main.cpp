@@ -3,9 +3,12 @@ extern "C"
     #include "lsd.h"
 };
 #include "VPDetection.h"
+#include <iostream>
+#include <experimental/filesystem>
 
 using namespace std;
 using namespace cv;
+namespace fs = std::experimental::filesystem;
 
 
 // LSD line segment detection
@@ -94,9 +97,19 @@ void drawClusters( cv::Mat &img, std::vector<std::vector<double> > &lines, std::
 	}
 }
 
-int main()
+int 
+main(int argc, char *argv[])
 {
 	string inPutImage = "./P1020171.jpg";
+	string filename;
+	string outputFilename;
+
+	if (argc == 2){
+		inPutImage = argv[1];
+	}
+
+	filename = fs::path(inPutImage).stem();
+	outputFilename = filename + string("_vpoutput.jpg");
 
 	cv::Mat image= cv::imread( inPutImage );
 	if ( image.empty() )
@@ -121,6 +134,7 @@ int main()
 	detector.run( lines, pp, f, vps, clusters );
 
 	drawClusters( image, lines, clusters );
+    imwrite(outputFilename, image);   // Read the file
 	imshow("",image);
 	cv::waitKey( 0 );
 	return 0;
