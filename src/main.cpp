@@ -96,7 +96,7 @@ void drawClusters( cv::Mat &img, std::vector<std::vector<double> > &lines, std::
 
 int main()
 {
-	string inPutImage = "D:\\DevelopCenter\\VanishingPoints\\datasets\\YorkUrbanDB\\P1020171\\P1020171.jpg";
+	string inPutImage = "./P1020171.jpg";
 
 	cv::Mat image= cv::imread( inPutImage );
 	if ( image.empty() )
