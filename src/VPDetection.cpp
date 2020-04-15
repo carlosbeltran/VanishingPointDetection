@@ -21,6 +21,7 @@ void VPDetection::run( std::vector<std::vector<double> > &lines, cv::Point2d pp,
 	this->pp = pp;
 	this->f = f;
 	this->noiseRatio = 0.5; 
+	cv::Mat homography = cv::Mat::zeros(3,3,CV_64F);
 
 	cout<<"get vp hypotheses . . ."<<endl;
 	std::vector<std::vector<cv::Point3d> > vpHypo;
@@ -42,6 +43,27 @@ void VPDetection::run( std::vector<std::vector<double> > &lines, cv::Point2d pp,
 		clusteredNum += clusters[i].size();
 	}
 
+	// Computing homography from vanishing points
+	// Pag 6 and 8 of:
+	// https://www.cs.cmu.edu/~ph/869/www/notes/criminisi.pdf
+	//
+	cout<<"total vps " << vps.size() << endl;
+	for (int i = 0; i < vps.size(); ++i){
+		cout << "v" << i << " = " << vps[i] << endl;
+		homography.at<double>(0,i) = vps[i].x;
+		homography.at<double>(1,i) = vps[i].y;
+		homography.at<double>(2,i) = vps[i].z;
+	}
+	//compute third colum
+	cv::Point3d l;
+	l = vps[0].cross(vps[1])/cv::norm(vps[0].cross(vps[1]));
+	cout << "l = " << l << endl;
+	homography.at<double>(0,2) = l.x;
+	homography.at<double>(1,2) = l.y;
+	homography.at<double>(2,2) = l.z;
+	//
+	
+	cout << homography << endl;
 	cout<<"total: " <<lines.size()<<"  clusered: "<<clusteredNum;
 	cout<<"   X: "<<clusters[0].size()<<"   Y: "<<clusters[1].size()<<"   Z: "<<clusters[2].size()<<endl;
 }
