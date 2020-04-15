@@ -94,7 +94,7 @@ void drawClusters( cv::Mat &img, std::vector<std::vector<double> > &lines, std::
 	}
 }
 
-void main()
+int main()
 {
 	string inPutImage = "D:\\DevelopCenter\\VanishingPoints\\datasets\\YorkUrbanDB\\P1020171\\P1020171.jpg";
 
@@ -110,8 +110,9 @@ void main()
 	LineDetect( image, thLength, lines );
 
 	// Camera internal parameters
-	cv::Point2d pp( 307, 251 );        // Principle point (in pixel)
-	double f = 6.053 / 0.009;          // Focal length (in pixel)
+	cv::Point2d pp( image.cols/2, image.rows/2);        // Principle point (in pixel)
+	//double f = 6.053 / 0.009;          // Focal length (in pixel)
+	double f = 1.2*(std::max(image.cols,image.rows));          // Focal length (in pixel)
 
 	// Vanishing point detection
 	std::vector<cv::Point3d> vps;              // Detected vanishing points (in pixel)
@@ -122,4 +123,5 @@ void main()
 	drawClusters( image, lines, clusters );
 	imshow("",image);
 	cv::waitKey( 0 );
+	return 0;
 }

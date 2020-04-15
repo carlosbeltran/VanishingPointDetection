@@ -79,7 +79,7 @@ void VPDetection::getVPHypVia2Lines( std::vector<std::vector<cv::Point3d> > &vpH
 	}
 
 	// get vp hypothesis for each iteration
-	vpHypo = std::vector<std::vector<cv::Point3d> > ( it * numVp2, 3 );
+	vpHypo = std::vector<std::vector<cv::Point3d> > ( it * numVp2, std::vector<cv::Point3d>(3) );
 	int count = 0;
 	srand((unsigned)time(NULL));  
 	for ( int i = 0; i < it; ++ i )
@@ -152,7 +152,7 @@ void VPDetection::getSphereGrids( std::vector<std::vector<double> > &sphereGrid 
 	int gridLA = angleSpanLA / angelAccuracy;
 	int gridLO = angleSpanLO / angelAccuracy;
 
-	sphereGrid = std::vector<std::vector<double> >( gridLA, gridLO );
+	sphereGrid = std::vector<std::vector<double> >( gridLA, std::vector<double>(gridLO));
 	for ( int i=0; i<gridLA; ++i )
 	{
 		for ( int j=0; j<gridLO; ++j )
@@ -221,7 +221,7 @@ void VPDetection::getSphereGrids( std::vector<std::vector<double> > &sphereGrid 
 	int neighNum = winSize * winSize;
 
 	// get the weighted line length of each grid
-	std::vector<std::vector<double> > sphereGridNew( gridLA, gridLO );
+	std::vector<std::vector<double> > sphereGridNew( gridLA,std::vector<double>(gridLO));
 	for ( int i=halfSize; i<gridLA-halfSize; ++i )
 	{
 		for ( int j=halfSize; j<gridLO-halfSize; ++j )
