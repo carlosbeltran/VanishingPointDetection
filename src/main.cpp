@@ -4,6 +4,7 @@ extern "C"
 };
 #include "VPDetection.h"
 #include <iostream>
+#include <fstream>
 #include <experimental/filesystem>
 
 using namespace std;
@@ -103,6 +104,7 @@ main(int argc, char *argv[])
 	string inPutImage = "./P1020171.jpg";
 	string filename;
 	string outputFilename;
+	string dataoutputFilename;
 
 	if (argc == 2){
 		inPutImage = argv[1];
@@ -110,6 +112,7 @@ main(int argc, char *argv[])
 
 	filename = fs::path(inPutImage).stem();
 	outputFilename = filename + string("_vpoutput.jpg");
+	dataoutputFilename = filename + string("_vpoutput.txt");
 
 	cv::Mat image= cv::imread( inPutImage );
 	if ( image.empty() )
@@ -133,6 +136,32 @@ main(int argc, char *argv[])
 	VPDetection detector;
 	detector.run( lines, pp, f, vps, clusters );
 
+	// Computing homography from vanishing points
+	// Pag 6 and 8 of:
+	// https://www.cs.cmu.edu/~ph/869/www/notes/criminisi.pdf
+	//
+	ofstream outputfile;
+	outputfile.open(dataoutputFilename);
+
+	cv::Mat homography = cv::Mat::zeros(3,3,CV_64F);
+	outputfile << "total vps " << vps.size() << endl;
+	for (int i = 0; i < vps.size(); ++i){
+		outputfile << "v" << i << " = " << vps[i] << endl;
+		homography.at<double>(0,i) = vps[i].x;
+		homography.at<double>(1,i) = vps[i].y;
+		homography.at<double>(2,i) = vps[i].z;
+	}
+	//compute third colum
+	cv::Point3d l;
+	l = vps[0].cross(vps[1])/cv::norm(vps[0].cross(vps[1]));
+	outputfile << "l = " << l << endl;
+	homography.at<double>(0,2) = l.x;
+	homography.at<double>(1,2) = l.y;
+	homography.at<double>(2,2) = l.z;
+	outputfile << homography << endl;
+	outputfile.close();
+	//
+	
 	drawClusters( image, lines, clusters );
     imwrite(outputFilename, image);   // Read the file
 	imshow("",image);
